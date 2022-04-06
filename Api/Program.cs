@@ -1,6 +1,8 @@
 using Api;
+using INF27507_Boutique_En_Ligne.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -11,13 +13,8 @@ builder.Services.AddMvc(option => option.EnableEndpointRouting = false).AddNewto
     option.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 });
 
-builder.Services.AddDbContext<AuthDbContext>(options => 
-{
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("MySQL"),
-        new MySqlServerVersion(new Version(8, 0, 28))
-    );
-});
+builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IDatabaseAdapter>(ServicesFactory.getInstance().GetDatabaseService());
 
 builder.Services.AddAuthentication(options =>
 {

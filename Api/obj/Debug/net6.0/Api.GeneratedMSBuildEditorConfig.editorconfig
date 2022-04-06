@@ -11,6 +11,6 @@ build_property.RootNamespace = Api
 build_property.ProjectDir = C:\Universite\Technologies du commerce électronique\Travaux Pratiques\INF27507_TP2\Api\
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
-build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = true
 build_property.MSBuildProjectDirectory = C:\Universite\Technologies du commerce électronique\Travaux Pratiques\INF27507_TP2\Api
 build_property._RazorSourceGeneratorDebug = 
