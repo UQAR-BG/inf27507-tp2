@@ -1,0 +1,58 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@model INF27507_Boutique_En_Ligne.Models.Product
+
+<div class="card mb-2">
+    <div class="card-body">
+        <div class="container">
+            <div class="row">
+                <div class="row">
+                    <div class="col">
+                        <img width="100" src="~/img/@Model.Image">
+                    </div>
+                    <div class="col">
+                        <h3>Informations : </h3>
+                        <b><i class="bi bi-tag-fill"></i> Titre :</b> @Model.Title <br />
+                        <b><i class="bi bi-currency-dollar"></i> Price :</b> @Model.Price.ToString("C") <br />
+                        <b><i class="bi bi-palette-fill"></i> Colour :</b> @Model.Colour.Name <br />
+                        <b><i class="bi bi-person-fill"></i> Vendeur :</b> @Model.Seller.Firstname @Model.Seller.Lastname
+                    </div>
+                </div>
+            </div>
+            @{
+                int? userId = HttpContextAccessor.HttpContext.Session.GetInt32("UserId");
+                string? userType = HttpContextAccessor.HttpContext.Session.GetString("UserType");
+                if (userId != null && userType.Equals(UserType.Client.ToString()))
+                {
+                    <div class="row mt-2 mb-2">
+                        <div class="text-center text-sm-end">
+                            <form asp-controller="Cart" asp-action="Add" asp-route-id="@Model.Id" asp-route-itemQuantity="1" method="post">
+                                <button type="submit" class="btn btn-primary btn-over-streched-link">Add to cart</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+                else if (userId != null && 
+                         userType.Equals(UserType.Seller.ToString()) && 
+                         userId == @Model.SellerId)
+                {
+                    <div class="row mt-2 mb-2">
+                        <div class="text-center text-sm-end">
+                            <form asp-controller="Product" asp-action="Edit" asp-route-id="@Model.Id" method="get">
+                                <button type="submit" class="btn btn-success btn-over-streched-link">Edit Product</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <a 
+            asp-controller="Product" 
+            asp-action="ProductPage"
+            asp-route-id="@Model.Id"
+            class="stretched-link"
+        ></a>
+    </div>
+</div>

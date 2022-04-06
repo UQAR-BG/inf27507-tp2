@@ -1,0 +1,86 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+@namespace INF27507_Boutique_En_Ligne.Models
+
+<h1 class="display-4">Checkout</h1>
+
+<div class="row mt-4 mb-2">
+    <div class="col">
+        <form>
+            @{
+                int counter = 1;
+
+                foreach(PaymentMethod method in @ViewBag.Methods)
+                {
+                    <div class="form-check">
+                        <input 
+                            id="methodId-@counter"
+                            class="form-check-input" 
+                            name="methodId" 
+                            type="radio" 
+                            onclick="handleCheckedChanged(this);" 
+                            value="@method.Id" 
+                            @{ @(method.Id == 1 ? "checked" : null); }
+                        />
+                        <label class="form-check-label">
+                            @method.Name
+                        </label>
+                    </div>
+
+                    counter++;
+                }
+            }
+        </form>
+    </div>
+</div>
+
+<div id="balance-payment">
+    <form asp-controller="Payment" asp-action="CompleteOrder" asp-route-methodId="1" method="post">
+        <button type="submit" class="btn btn-primary mt-4">Complete order</button>
+    </form>
+</div>
+
+@using Microsoft.Extensions.Options
+@inject IOptions<INF27507_Boutique_En_Ligne.Settings.StripeSettings> Stripe
+
+<div id="stripe-payment" class="mt-4">
+    <form asp-controller="Payment" asp-action="StripePayment" method="post">
+        <script src="https://checkout.stripe.com/checkout.js" id="stripe-pay" class="stripe-button"
+                data-key="@Stripe.Value.PublicKey"
+                data-amount="@ViewBag.CartTotal"
+                data-description="Boutique du TP2"
+                data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                data-locale="fr"
+                data-zip-code="false"
+                data-label="Complete order">
+        </script>
+    </form>
+</div>
+
+<script>
+    var balanceDiv = document.getElementById("balance-payment");
+    var stripeDiv = document.getElementById("stripe-payment");
+
+    balanceDiv.style.display = "none";
+    stripeDiv.style.display = "none";
+
+    const handleCheckedChanged = radio => {
+        if (radio.value == 1) {
+            if (radio.checked) {
+                balanceDiv.style.display = "block";
+                stripeDiv.style.display = "none";
+            }
+        } else {
+            if (radio.checked) {
+                balanceDiv.style.display = "none";
+                stripeDiv.style.display = "block";
+            }
+        }
+    };
+
+    let radioBalance = document.getElementById("methodId-1");
+    handleCheckedChanged(radioBalance);
+</script>
