@@ -37,16 +37,16 @@ namespace INF27507_Boutique_En_Ligne
             modelBuilder.Entity<Client>().HasKey(client => client.Id).HasName("pk_clients_id");
             modelBuilder.Entity<Client>().HasMany(client => client.Carts).WithOne(cart => cart.Client);
             modelBuilder.Entity<Client>().HasData(
-                new Client() { Id = 1, Email = "default.user@gmail.com", Phone ="418-888-9999", Firstname = "Default", Lastname = "User", Balance = 250.00 }
+                new Client() { Id = 1, Email = "default.user@gmail.com", PhoneNumber ="418-888-9999", Firstname = "Default", Lastname = "User", Balance = 250.00 }
             );
 
             modelBuilder.Entity<Seller>().HasKey(seller => seller.Id).HasName("pk_sellers_id");
             modelBuilder.Entity<Seller>().HasMany(seller => seller.Products).WithOne(product => product.Seller);
             modelBuilder.Entity<Seller>().HasData(
-                new Seller() { Id = 1, Email = "albert.vendeur@gmail.com", Phone = "581-456-3263", Firstname = "Albert", Lastname = "" },
-                new Seller() { Id = 2, Email = "amelie.vendeur@gmail.com", Phone = "418-753-1596", Firstname = "Amélie", Lastname = "" },
-                new Seller() { Id = 3, Email = "julie.vendeur@gmail.com", Phone = "918-852-1122", Firstname = "Julie", Lastname = "" },
-                new Seller() { Id = 4, Email = "xavier.vendeur@gmail.com", Phone = "418-874-5632", Firstname = "Xavier", Lastname = "" }
+                new Seller() { Id = 1, Email = "albert.vendeur@gmail.com", PhoneNumber = "581-456-3263", Firstname = "Albert", Lastname = "" },
+                new Seller() { Id = 2, Email = "amelie.vendeur@gmail.com", PhoneNumber = "418-753-1596", Firstname = "Amélie", Lastname = "" },
+                new Seller() { Id = 3, Email = "julie.vendeur@gmail.com", PhoneNumber = "918-852-1122", Firstname = "Julie", Lastname = "" },
+                new Seller() { Id = 4, Email = "xavier.vendeur@gmail.com", PhoneNumber = "418-874-5632", Firstname = "Xavier", Lastname = "" }
             );
 
             modelBuilder.Entity<Gender>().HasKey(g => g.Id).HasName("pk_genders_id");

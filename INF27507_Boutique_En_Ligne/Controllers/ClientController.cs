@@ -62,7 +62,7 @@ public class ClientController : Controller
             LastName = client.Lastname,
             Firstname = client.Firstname,
             Email = client.Email,
-            Phone = client.Phone,
+            Phone = client.PhoneNumber,
         });
     }
 
