@@ -39,7 +39,9 @@
 
 <div id="balance-payment">
     <form asp-controller="Payment" asp-action="CompleteOrder" asp-route-methodId="1" method="post">
-        <button type="submit" class="btn btn-primary mt-4">Complete order</button>
+        <button type="submit" class="btn btn-success mt-4">
+            <i class="fa fa-shopping-cart"></i> Complete order
+        </button>
     </form>
 </div>
 
@@ -57,6 +59,12 @@
                 data-zip-code="false"
                 data-label="Complete order">
         </script>
+        <script>
+            document.getElementsByClassName("stripe-button-el")[0].style.display = 'none';
+        </script>
+        <button type="submit" class="btn btn-success mt-4">
+            <i class="fa fa-shopping-cart"></i> Complete order
+        </button>
     </form>
 </div>
 
