@@ -1,9 +1,10 @@
-﻿namespace INF27507_Boutique_En_Ligne.Models
+﻿using System.Security.Principal;
+using Microsoft.AspNetCore.Identity;
+
+namespace INF27507_Boutique_En_Ligne.Models
 {
-    public abstract class User : IModel
+    public abstract class User : IdentityUser<int>
     {
-        public string Email { get; set; }
-        public string Phone { get; set; }
         public string Firstname { get; set; }
         public string Lastname { get; set; }
     }

@@ -66,7 +66,7 @@ namespace INF27507_Boutique_En_Ligne.Controllers
                 {
                     Email = stripeEmail,
                     Name = client.Firstname + " " + client.Lastname,
-                    Phone = client.Phone
+                    Phone = client.PhoneNumber
                 };
             }
             else
@@ -75,7 +75,7 @@ namespace INF27507_Boutique_En_Ligne.Controllers
                 {
                     Email = stripeClient.Email,
                     Name = stripeClient.Firstname + " " + stripeClient.Lastname,
-                    Phone = stripeClient.Phone
+                    Phone = stripeClient.PhoneNumber
                 };
             }
 

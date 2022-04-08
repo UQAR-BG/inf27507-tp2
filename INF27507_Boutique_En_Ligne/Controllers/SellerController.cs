@@ -59,7 +59,7 @@ namespace INF27507_Boutique_En_Ligne.Controllers
             {
                 LastName = seller.Lastname,
                 Firstname = seller.Firstname,
-                Phone = seller.Phone,
+                Phone = seller.PhoneNumber,
                 Email = seller.Email,
             });
         }

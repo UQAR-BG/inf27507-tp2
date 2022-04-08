@@ -3,6 +3,7 @@ using System;
 using INF27507_Boutique_En_Ligne;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace INF27507_Boutique_En_Ligne.Migrations
 {
     [DbContext(typeof(BoutiqueDbContext))]
-    partial class BoutiqueDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220408003029_Identity")]
+    partial class Identity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,6 +113,7 @@ namespace INF27507_Boutique_En_Ligne.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<bool>("EmailConfirmed")
@@ -139,6 +142,10 @@ namespace INF27507_Boutique_En_Ligne.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("longtext");
 
@@ -165,13 +172,13 @@ namespace INF27507_Boutique_En_Ligne.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             Balance = 250.0,
-                            ConcurrencyStamp = "c94b4c97-4384-432e-a273-5a97f75b7d5c",
+                            ConcurrencyStamp = "4bc39ba9-01a3-4c4b-85fd-a1c3ecf87b47",
                             Email = "default.user@gmail.com",
                             EmailConfirmed = false,
                             Firstname = "Default",
                             Lastname = "User",
                             LockoutEnabled = false,
-                            PhoneNumber = "418-888-9999",
+                            Phone = "418-888-9999",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false
                         });
@@ -1376,6 +1383,7 @@ namespace INF27507_Boutique_En_Ligne.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<bool>("EmailConfirmed")
@@ -1404,6 +1412,10 @@ namespace INF27507_Boutique_En_Ligne.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("longtext");
 
@@ -1429,13 +1441,13 @@ namespace INF27507_Boutique_En_Ligne.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "fe7ab66c-0aac-4bee-90d6-e046e0d17a48",
+                            ConcurrencyStamp = "abafb10d-e654-4660-9858-a5d7e209ff60",
                             Email = "albert.vendeur@gmail.com",
                             EmailConfirmed = false,
                             Firstname = "Albert",
                             Lastname = "",
                             LockoutEnabled = false,
-                            PhoneNumber = "581-456-3263",
+                            Phone = "581-456-3263",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false
                         },
@@ -1443,13 +1455,13 @@ namespace INF27507_Boutique_En_Ligne.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2254d7f4-ea2c-474e-aa24-42c0490693f2",
+                            ConcurrencyStamp = "374763c6-d51d-49bb-a457-e3a59308b173",
                             Email = "amelie.vendeur@gmail.com",
                             EmailConfirmed = false,
                             Firstname = "Amélie",
                             Lastname = "",
                             LockoutEnabled = false,
-                            PhoneNumber = "418-753-1596",
+                            Phone = "418-753-1596",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false
                         },
@@ -1457,13 +1469,13 @@ namespace INF27507_Boutique_En_Ligne.Migrations
                         {
                             Id = 3,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "59e914e3-a4da-4bc8-ac6d-91b9926200ca",
+                            ConcurrencyStamp = "db62d5a4-45be-48d9-8e0d-02cbac91ad29",
                             Email = "julie.vendeur@gmail.com",
                             EmailConfirmed = false,
                             Firstname = "Julie",
                             Lastname = "",
                             LockoutEnabled = false,
-                            PhoneNumber = "918-852-1122",
+                            Phone = "918-852-1122",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false
                         },
@@ -1471,13 +1483,13 @@ namespace INF27507_Boutique_En_Ligne.Migrations
                         {
                             Id = 4,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "523fab5a-8efa-4abc-8cb1-767351b18a24",
+                            ConcurrencyStamp = "cc7a01bf-6f44-4559-b6b0-db93baa24d03",
                             Email = "xavier.vendeur@gmail.com",
                             EmailConfirmed = false,
                             Firstname = "Xavier",
                             Lastname = "",
                             LockoutEnabled = false,
-                            PhoneNumber = "418-874-5632",
+                            Phone = "418-874-5632",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false
                         });
