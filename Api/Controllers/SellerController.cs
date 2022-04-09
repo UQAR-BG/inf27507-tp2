@@ -1,14 +1,15 @@
 ﻿using INF27507_Boutique_En_Ligne.Models;
 using INF27507_Boutique_En_Ligne.Models.FormData;
 using INF27507_Boutique_En_Ligne.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
-    [Authorize(Roles = "Seller")]
-    [Produces("application/json")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Seller")]
+    [Produces("application/json")]
     public class SellerController : ControllerBase
     {
         private readonly IDatabaseAdapter _database;

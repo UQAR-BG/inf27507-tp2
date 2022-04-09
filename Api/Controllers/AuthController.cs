@@ -2,10 +2,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 /*
  * Tout le crédit des idées utilisées dans cette classe doit être
- * porté au site Binary Intellect. Repéré à http://www.binaryintellect.net/articles/b957238b-e2dd-4401-bfd7-f0b8d984786d.aspx
+ * porté à M. Sarathlal Saseendran. 
+ * Repéré à https://www.c-sharpcorner.com/article/jwt-authentication-and-authorization-in-net-6-0-with-identity-framework/
  */
 
 namespace Api.Controllers
@@ -19,54 +24,48 @@ namespace Api.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _loginManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IConfiguration _configuration;
 
         public AuthController(IDatabaseAdapter database, 
                               UserManager<IdentityUser> userManager,
                               SignInManager<IdentityUser> loginManager,
-                              RoleManager<IdentityRole> roleManager)
+                              RoleManager<IdentityRole> roleManager,
+                              IConfiguration configuration)
         {
             _database = database;
             _userManager = userManager;
             _loginManager = loginManager;
             _roleManager = roleManager;
+            _configuration = configuration;
         }
 
         [HttpPost]
         [Route("/api/register")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Register([FromForm] Register register)
+        public async Task<IActionResult> Register([FromForm] Register register)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    IdentityUser user = new IdentityUser();
-                    user.UserName = register.Username;
-                    user.Email = register.Email;
+                    IdentityUser userExists = await _userManager.FindByNameAsync(register.Username);
+                    if (userExists != null)
+                        return StatusCode(StatusCodes.Status500InternalServerError, "User already exists!");
 
-                    IdentityResult result = _userManager.CreateAsync(user, register.Password).Result;
-
-                    if (result.Succeeded)
+                    IdentityUser user = new IdentityUser()
                     {
-                        string roleName = register.Role.ToString();
+                        Email = register.Email,
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        UserName = register.Username
+                    };
 
-                        if (!_roleManager.RoleExistsAsync(roleName).Result)
-                        {
-                            IdentityRole role = new IdentityRole();
-                            role.Name = roleName;
+                    IdentityResult result = await _userManager.CreateAsync(user, register.Password);
+                    if (!result.Succeeded)
+                        return StatusCode(StatusCodes.Status500InternalServerError, "User creation failed! Please check user details and try again.");
 
-                            IdentityResult roleResult = _roleManager.CreateAsync(role).Result;
-                            if (!roleResult.Succeeded)
-                            {
-                                return BadRequest($"Error while creating role {roleName} !");
-                            }
-                        }
-
-                        _userManager.AddToRoleAsync(user, roleName).Wait();
-                        return Ok("The user was created successfully.");
-                    }
-                    return BadRequest(result.Errors.ToList());
+                    _userManager.AddToRoleAsync(user, register.Role.ToString()).Wait();
+                    return Ok("The user was created successfully.");
                 }
                 return BadRequest("Invalid register information");
             }
@@ -80,26 +79,55 @@ namespace Api.Controllers
         [Route("/api/login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Login([FromForm] Login login)
+        public async Task<IActionResult> Login([FromForm] Login login)
         {
             try
             {
-                if (ModelState.IsValid)
+                IdentityUser user = await _userManager.FindByNameAsync(login.Username);
+                if (user != null && await _userManager.CheckPasswordAsync(user, login.Password))
                 {
-                    var result = _loginManager.PasswordSignInAsync(login.Username, login.Password, false, false).Result;
+                    IList<string> userRoles = await _userManager.GetRolesAsync(user);
 
-                    if (result.Succeeded)
+                    List<Claim> authClaims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, user.UserName),
+                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        };
+
+                    foreach (string userRole in userRoles)
                     {
-                        return Ok("Login successful");
+                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                     }
-                    return BadRequest(result);
+
+                    JwtSecurityToken token = GetToken(authClaims);
+
+                    return Ok(new
+                    {
+                        token = new JwtSecurityTokenHandler().WriteToken(token),
+                        expiration = token.ValidTo
+                    });
                 }
-                return BadRequest("Login info invalid");
+                return Unauthorized();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest($"An error has occured: {ex.Message}");
             }
+        }
+
+        private JwtSecurityToken GetToken(List<Claim> authClaims)
+        {
+            SymmetricSecurityKey authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+            JwtSecurityToken token = new JwtSecurityToken(
+                issuer: _configuration["JWT:ValidIssuer"],
+                audience: _configuration["JWT:ValidAudience"],
+                expires: DateTime.Now.AddHours(1),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+            );
+
+            return token;
         }
     }
 }
