@@ -26,8 +26,12 @@ builder.Services.AddSingleton<IJwtHandler>(new JwtHandler(builder.Configuration)
  * Repéré à https://www.c-sharpcorner.com/article/jwt-authentication-and-authorization-in-net-6-0-with-identity-framework/
  */
 
-builder.Services.AddDbContext<AuthDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("AuthSqlServer")));
+builder.Services.AddDbContext<AuthDbContext>(options => {
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("MySQL"),
+        new MySqlServerVersion(new Version(8, 0, 28))
+    ); 
+});
 
 builder.Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>()
