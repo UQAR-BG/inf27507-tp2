@@ -2,10 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 /*
  * Tout le crédit des idées utilisées dans cette classe doit être
@@ -22,21 +19,15 @@ namespace Api.Controllers
     {
         private readonly IDatabaseAdapter _database;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _loginManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IConfiguration _configuration;
+        private readonly IJwtHandler _jwtHandler;
 
         public AuthController(IDatabaseAdapter database, 
                               UserManager<IdentityUser> userManager,
-                              SignInManager<IdentityUser> loginManager,
-                              RoleManager<IdentityRole> roleManager,
-                              IConfiguration configuration)
+                              IJwtHandler jwtHandler)
         {
             _database = database;
             _userManager = userManager;
-            _loginManager = loginManager;
-            _roleManager = roleManager;
-            _configuration = configuration;
+            _jwtHandler = jwtHandler;
         }
 
         [HttpPost]
@@ -86,26 +77,10 @@ namespace Api.Controllers
                 IdentityUser user = await _userManager.FindByNameAsync(login.Username);
                 if (user != null && await _userManager.CheckPasswordAsync(user, login.Password))
                 {
-                    IList<string> userRoles = await _userManager.GetRolesAsync(user);
+                    IList<string> roles = await _userManager.GetRolesAsync(user);
+                    JwtSecurityToken token = _jwtHandler.GetToken(user, roles);
 
-                    List<Claim> authClaims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Name, user.UserName),
-                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        };
-
-                    foreach (string userRole in userRoles)
-                    {
-                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                    }
-
-                    JwtSecurityToken token = GetToken(authClaims);
-
-                    return Ok(new
-                    {
-                        token = new JwtSecurityTokenHandler().WriteToken(token),
-                        expiration = token.ValidTo
-                    });
+                    return Ok(_jwtHandler.WriteToken(token));
                 }
                 return Unauthorized();
             }
@@ -113,21 +88,6 @@ namespace Api.Controllers
             {
                 return BadRequest($"An error has occured: {ex.Message}");
             }
-        }
-
-        private JwtSecurityToken GetToken(List<Claim> authClaims)
-        {
-            SymmetricSecurityKey authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-
-            JwtSecurityToken token = new JwtSecurityToken(
-                issuer: _configuration["JWT:ValidIssuer"],
-                audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddHours(1),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-            );
-
-            return token;
         }
     }
 }

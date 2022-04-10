@@ -18,6 +18,7 @@ builder.Services.AddMvc(option => option.EnableEndpointRouting = false).AddNewto
 
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IDatabaseAdapter>(ServicesFactory.getInstance().GetDatabaseService());
+builder.Services.AddSingleton<IJwtHandler>(new JwtHandler(builder.Configuration));
 
 /*
  * Tout le crédit des idées utilisées dans les configurations suivantes

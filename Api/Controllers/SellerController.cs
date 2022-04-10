@@ -13,10 +13,12 @@ namespace Api.Controllers
     public class SellerController : ControllerBase
     {
         private readonly IDatabaseAdapter _database;
+        private readonly IJwtHandler _jwtHandler;
 
-        public SellerController(IDatabaseAdapter database)
+        public SellerController(IDatabaseAdapter database, IJwtHandler jwtHandler)
         {
             _database = database;
+            _jwtHandler = jwtHandler;
         }
 
         [HttpGet]
@@ -24,6 +26,8 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetInfo()
         {
+            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
+
             UserInfo userInfo = new UserInfo()
             {
                 LastName = "User",
