@@ -1,4 +1,5 @@
-﻿using INF27507_Boutique_En_Ligne.Services;
+﻿using INF27507_Boutique_En_Ligne.Models;
+using INF27507_Boutique_En_Ligne.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -56,6 +57,8 @@ namespace Api.Controllers
                         return StatusCode(StatusCodes.Status500InternalServerError, "User creation failed! Please check user details and try again.");
 
                     _userManager.AddToRoleAsync(user, register.Role.ToString()).Wait();
+                    AddUserToSpecificTable(register);
+
                     return Ok("The user was created successfully.");
                 }
                 return BadRequest("Invalid register information");
@@ -88,6 +91,39 @@ namespace Api.Controllers
             {
                 return BadRequest($"An error has occured: {ex.Message}");
             }
+        }
+
+        private void AddUserToSpecificTable(Register register)
+        {
+            if (register.Role == UserType.Client)
+                AddClient(register);
+            else
+                AddSeller(register);
+        }
+
+        private void AddClient(Register register)
+        {
+            Client client = new Client()
+            {
+                Email = register.Email,
+                UserName = register.Username,
+                Firstname = register.FullName,
+                Balance = 200
+            };
+
+            _database.AddClient(client);
+        }
+
+        private void AddSeller(Register register)
+        {
+            Seller seller = new Seller()
+            {
+                Email = register.Email,
+                UserName = register.Username,
+                Firstname = register.FullName
+            };
+
+            _database.AddSeller(seller);
         }
     }
 }

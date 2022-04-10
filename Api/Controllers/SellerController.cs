@@ -28,15 +28,9 @@ namespace Api.Controllers
         {
             UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
 
-            UserInfo userInfo = new UserInfo()
-            {
-                LastName = "User",
-                Firstname = "Test",
-                Email = "test.user@gmail.com",
-                Phone = "418-123-4567"
-            };
+            Seller seller = _database.GetSeller(userContext.Email);
 
-            return Ok(userInfo);
+            return Ok(seller);
         }
 
         [HttpPatch]

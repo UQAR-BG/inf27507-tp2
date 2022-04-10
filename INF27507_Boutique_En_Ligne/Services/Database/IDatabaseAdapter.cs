@@ -12,6 +12,7 @@ namespace INF27507_Boutique_En_Ligne.Services
         void UpdateClientInfo(Client client);
         List<Client> GetClients();
         Seller GetSeller(int id);
+        Seller GetSeller(string email);
         List<Seller> GetSellers();
         void AddSeller(Seller seller);
         void UpdateSellerInfo(Seller seller);

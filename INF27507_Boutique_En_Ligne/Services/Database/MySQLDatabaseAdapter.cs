@@ -47,6 +47,11 @@ namespace INF27507_Boutique_En_Ligne.Services
             return service.GetSeller(id);
         }
 
+        public Seller GetSeller(string email)
+        {
+            return service.GetSeller(email);
+        }
+
         public List<Seller> GetSellers()
         {
             return service.GetSellers();

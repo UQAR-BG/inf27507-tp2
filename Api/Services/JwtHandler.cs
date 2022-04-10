@@ -1,5 +1,4 @@
 ﻿using INF27507_Boutique_En_Ligne.Models;
-using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -22,6 +21,7 @@ namespace Api
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
 
@@ -53,12 +53,14 @@ namespace Api
 
             string jti = token.Claims.First(claim => claim.Type == JwtRegisteredClaimNames.Jti).Value;
             string userName = token.Claims.First(claim => claim.Type == ClaimTypes.Name).Value;
+            string email = token.Claims.First(claim => claim.Type == ClaimTypes.Email).Value;
             UserType role = Enum.Parse<UserType>(token.Claims.First(claim => claim.Type == ClaimTypes.Role).Value);
 
             return new UserContext()
             {
                 Jti = jti,
                 UserName = userName,
+                Email = email,
                 Role = role
             };
         }

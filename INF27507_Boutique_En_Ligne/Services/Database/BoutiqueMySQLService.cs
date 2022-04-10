@@ -50,6 +50,12 @@ namespace INF27507_Boutique_En_Ligne.Services
                 .FirstOrDefault(c => c.Id == id);
         }
 
+        public Seller GetSeller(string email)
+        {
+            return _dbContext.Sellers
+                .FirstOrDefault(c => c.Email.Equals(email));
+        }
+
         public List<Seller> GetSellers()
         {
             return _dbContext.Sellers.ToList();
