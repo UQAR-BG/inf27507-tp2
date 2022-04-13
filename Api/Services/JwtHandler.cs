@@ -10,10 +10,12 @@ namespace Api
     public class JwtHandler : IJwtHandler
     {
         private readonly IConfiguration configuration;
+        private readonly JwtSecurityTokenHandler securityTokenHandler;
 
         public JwtHandler(IConfiguration configuration)
         {
             this.configuration = configuration;
+            securityTokenHandler = new JwtSecurityTokenHandler();
         }
 
         public JwtSecurityToken GetToken(IdentityUser user, IList<string> roles)
@@ -45,11 +47,9 @@ namespace Api
 
         public UserContext GetUserContext(HttpRequest request)
         {
-            JwtSecurityTokenHandler jwtHandler = new JwtSecurityTokenHandler();
-
             string authorizationHeader = request.Headers["Authorization"];
             authorizationHeader = authorizationHeader.Replace("Bearer ", "");
-            JwtSecurityToken token = jwtHandler.ReadJwtToken(authorizationHeader);
+            JwtSecurityToken token = securityTokenHandler.ReadJwtToken(authorizationHeader);
 
             string jti = token.Claims.First(claim => claim.Type == JwtRegisteredClaimNames.Jti).Value;
             string userName = token.Claims.First(claim => claim.Type == ClaimTypes.Name).Value;
@@ -67,7 +67,7 @@ namespace Api
 
         public string WriteToken(JwtSecurityToken token)
         {
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return securityTokenHandler.WriteToken(token);
         }
     }
 }
