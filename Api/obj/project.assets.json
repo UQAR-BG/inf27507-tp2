@@ -3247,19 +3247,26 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\basti\\.nuget\\packages\\": {}
+    "C:\\Users\\Utilisateur\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Universite\\Technologies du commerce électronique\\Travaux Pratiques\\INF27507_TP2\\Api\\Api.csproj",
+      "projectUniqueName": "E:\\HIVER2022\\TP2_Techno\\inf27507-tp2\\Api\\Api.csproj",
       "projectName": "Api",
-      "projectPath": "C:\\Universite\\Technologies du commerce électronique\\Travaux Pratiques\\INF27507_TP2\\Api\\Api.csproj",
-      "packagesPath": "C:\\Users\\basti\\.nuget\\packages\\",
-      "outputPath": "C:\\Universite\\Technologies du commerce électronique\\Travaux Pratiques\\INF27507_TP2\\Api\\obj\\",
+      "projectPath": "E:\\HIVER2022\\TP2_Techno\\inf27507-tp2\\Api\\Api.csproj",
+      "packagesPath": "C:\\Users\\Utilisateur\\.nuget\\packages\\",
+      "outputPath": "E:\\HIVER2022\\TP2_Techno\\inf27507-tp2\\Api\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\basti\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Utilisateur\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -3273,8 +3280,8 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "C:\\Universite\\Technologies du commerce électronique\\Travaux Pratiques\\INF27507_TP2\\INF27507_Boutique_En_Ligne\\INF27507_Boutique_En_Ligne.csproj": {
-              "projectPath": "C:\\Universite\\Technologies du commerce électronique\\Travaux Pratiques\\INF27507_TP2\\INF27507_Boutique_En_Ligne\\INF27507_Boutique_En_Ligne.csproj"
+            "E:\\HIVER2022\\TP2_Techno\\inf27507-tp2\\INF27507_Boutique_En_Ligne\\INF27507_Boutique_En_Ligne.csproj": {
+              "projectPath": "E:\\HIVER2022\\TP2_Techno\\inf27507-tp2\\INF27507_Boutique_En_Ligne\\INF27507_Boutique_En_Ligne.csproj"
             }
           }
         }
