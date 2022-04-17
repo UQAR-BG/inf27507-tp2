@@ -54,6 +54,36 @@ namespace Api.Controllers
             return Ok(products);
         }
 
+        //recuperer une liste de produits avec un identifiant
+        [HttpGet]
+        [Route("/api/products/{product_id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetProduct([FromRoute] int Product_id)
+        {
+
+            return Ok();
+        }
+
+        //ajouter un nouvaeu produit
+        [HttpPost]
+        [Route("/api/cart/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetCart([FromRoute] string product)
+        {
+
+            return Ok();
+        }
+
+        //changer la quantité
+        [HttpPatch]
+        [Route("/api/cart/{product_id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPoduct([FromRoute] int product_id)
+        {
+
+            return Ok();
+        }
+
         //enlever le produit du panier
         [HttpDelete]
         [Route("/api/cart/{product_id}")]
@@ -62,6 +92,57 @@ namespace Api.Controllers
         {
             return Ok();
         }
+
+
+        //faire le paiement
+        [HttpGet]
+        [Route("/api/pay/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPay()
+        {
+
+            return Ok();
+        }
+
+        //recuperer la liste des factures
+        [HttpGet]
+        [Route("/api/invoices/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetFacture()
+        {
+
+            return Ok();
+        }
+
+        //recuperer une facture en particulier
+        [HttpGet]
+        [Route("/api/invoices/{invoice_id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetFacture(int Facture_id)
+        {
+
+            return Ok();
+        }
+
+        ////recuperer les stats
+        //[HttpGet]
+        //[Route("/api/stats/")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //public async Task<IActionResult> GetStat()
+        //{
+
+        //    return Ok();
+        //}
+
+
+
+
+
+
+
+
+
+
 
         //changer la quantité d'un produit
         //[HttpPatch]
@@ -72,7 +153,7 @@ namespace Api.Controllers
         //    return Ok();
         //}
 
-        //[HttpGet]
+        //[HttpGet("{product_id}", Name = "GetProduct")]
         //[Route("/api/product/{product_id}")]
         //[ProducesResponseType(StatusCodes.Status200OK)]
         //public async Task<IActionResult> GetProduct([FromRoute] int product_id)
@@ -81,6 +162,22 @@ namespace Api.Controllers
         //    Product product = new Product();
         //    return Ok(product);
         //}
+
+        //[HttpGet]
+        //[Route("/api/product/{product_id}")]
+        //public async Task<IActionResult> GetProduct([FromRoute]int product_id)
+        //{
+        //    try
+        //    {
+        //        Product product = new Product();
+        //        return Ok(product); 
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
+
 
 
     }
