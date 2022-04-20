@@ -20,10 +20,12 @@ namespace INF27507_Boutique_En_Ligne.Services
         List<Product> GetProducts();
         Product GetProduct(int id);
         Product GetProductForValidation(int id);
+        List<Product> getProductsOwnedBySeller(int id);
         bool ProductIsOwnedBy(int productId, int sellerId);
         Product AddProduct(Product product);
         Product UpdateProduct(ProductUpdate update);
         void DeleteProduct(int id);
+        public void DeleteProduct(int id, bool FullDelete);
         Cart GetActiveCart(int clientId);
         double GetCartTotal(int cartId);
         Cart CreateActiveCart(int clientId);

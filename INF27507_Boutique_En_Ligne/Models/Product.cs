@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace INF27507_Boutique_En_Ligne.Models
 {
@@ -21,18 +24,23 @@ namespace INF27507_Boutique_En_Ligne.Models
         public Usage? Usage { get; set; }
         [Required]
         public int ColourId { get; set; }
+        [JsonIgnore]
         public Colour? Colour { get; set; }
         [Required]
         public int CategoryId { get; set; }
+        [JsonIgnore]
         public Category? Category { get; set; }
         [Required]
         public int SubCategoryId { get; set; }
+        [JsonIgnore]
         public SubCategory? SubCategory { get; set; }
         [Required]
         public int ProductTypeId { get; set; }
+        [JsonIgnore]
         public ProductType? ProductType { get; set; }
         [Required]
         public int SellerId { get; set; }
+        [JsonIgnore]
         public Seller? Seller { get; set; }
     }
 }

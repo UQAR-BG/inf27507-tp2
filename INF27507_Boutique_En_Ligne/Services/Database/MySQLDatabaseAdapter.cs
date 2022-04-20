@@ -152,6 +152,11 @@ namespace INF27507_Boutique_En_Ligne.Services
             return service.GetProductForValidation(id);
         }
 
+        public List<Product> getProductsOwnedBySeller(int id)
+        {
+            return service.GetProductsOwnedBySeller(id);
+        }
+
         public bool ProductIsOwnedBy(int productId, int sellerId)
         {
             return service.ProductIsOwnedBy(productId, sellerId);
@@ -170,6 +175,11 @@ namespace INF27507_Boutique_En_Ligne.Services
         public void DeleteProduct(int id)
         {
             service.DeleteProduct(id);
+        }
+        
+        public void DeleteProduct(int id, bool FullDelete)
+        {
+            service.DeleteProduct(id, FullDelete);
         }
 
         public List<PaymentMethod> GetPaymentMethods()

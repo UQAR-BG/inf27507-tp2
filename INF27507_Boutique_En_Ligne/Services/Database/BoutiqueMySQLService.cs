@@ -241,9 +241,19 @@ namespace INF27507_Boutique_En_Ligne.Services
 
         public void DeleteProduct(int id)
         {
+            DeleteProduct(id, false);
+        }
+        
+        public void DeleteProduct(int id, bool FullDelete)
+        {
             Product product = _dbContext.Products.Find(id);
 
-            if (product != null)
+            if (product != null && FullDelete)
+            {
+                _dbContext.Products.Remove(product);
+                _dbContext.SaveChanges();
+            }
+            else
             {
                 product.Active = false;
                 _dbContext.SaveChanges();
@@ -368,6 +378,11 @@ namespace INF27507_Boutique_En_Ligne.Services
         {
             _dbContext.Sellers.Update(seller);
             _dbContext.SaveChanges();
+        }
+
+        public List<Product> GetProductsOwnedBySeller(int id)
+        {
+            return _dbContext.Products.Where(p => p.SellerId == id).ToList();
         }
     }
 }
