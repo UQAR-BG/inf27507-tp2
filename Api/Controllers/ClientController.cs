@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace Api.Controllers
 {
@@ -32,6 +33,14 @@ namespace Api.Controllers
 
             Client client = _database.GetClient(userContext.Email);
 
+            return Ok(new UserInfo()
+            {
+                Email = client.Email,
+                Balance = client.Balance,
+                Firstname = client.Firstname,
+                LastName = client.Lastname,
+                Phone = client.PhoneNumber
+            });
             return Ok(client);
         }
 
@@ -41,7 +50,16 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateInfo([FromForm] UserInfo userInfo)
         {
-            return Ok();
+            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
+            Client client = _database.GetClient(userContext.Email);
+            client.Email = userInfo.Email;
+            client.PhoneNumber = userInfo.Phone;
+            client.Lastname = userInfo.LastName;
+            client.Firstname = userInfo.Firstname;
+            client.Balance = userInfo.Balance;
+            _database.UpdateClientInfo(client);
+            //_database.UpdateClientBalance(client);
+            return Ok(client);
         }
 
         //recupérer une liste de produits par mots clés
@@ -50,7 +68,12 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProduct([FromRoute] string keyword)
         {
-            List<Product> products = new List<Product>();
+            //Product product = _database.GetProduct(keyword);
+            List<Product> products = _database.GetProduct(keyword);
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                return NotFound();
+            }
             return Ok(products);
         }
 
@@ -60,8 +83,14 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProduct([FromRoute] int Product_id)
         {
+            //List<Product> products = _database.GetProduct(Product_id) ;
+            Product product = _database.GetProduct(Product_id);
+            if (Product_id == null)
+            {
+                return NotFound(string.Empty);
+            }
 
-            return Ok();
+            return Ok(product);
         }
 
         //ajouter un nouvaeu produit
@@ -80,8 +109,15 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPoduct([FromRoute] int product_id)
         {
-
-            return Ok();
+            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
+            Client client = _database.GetClient(userContext.Email);
+            List<CartItem> cartItems = _database.GetCartItems(product_id);
+            if (product_id == 0)
+            {
+                return NotFound();
+            }
+            //_database.UpdateProduct(CartItems);
+            return Ok(cartItems);
         }
 
         //enlever le produit du panier
@@ -90,7 +126,17 @@ namespace Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> DeleteProduct([FromRoute] int product_id)
         {
-            return Ok();
+
+            Product? product = _database.GetProduct(product_id);
+            //Product product = _database.GetCartItem(product_id);
+            if (product_id == null)
+            {
+                return NotFound();
+            }
+
+            _database.DeleteProduct(product_id, true);
+
+            return Ok(product);
         }
 
 
@@ -124,15 +170,24 @@ namespace Api.Controllers
             return Ok();
         }
 
-        ////recuperer les stats
-        //[HttpGet]
-        //[Route("/api/stats/")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //public async Task<IActionResult> GetStat()
-        //{
+        //recuperer les stats
+        [HttpGet]
+        [Route("/api/stats/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetStats()
+        {
+            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
+            Client client = _database.GetClient(userContext.Email);
+            //List<CartItem> items = _database.GetCartItems(client);
+            List<Order> orders = _database.GetOrders(client);
+            Dictionary<string, string> data = new Dictionary<string, string>
+            {
+            {"total", $"{orders.Sum(o => o.Cart.Items.Sum(i => i.Quantity * i.SalePrice)):C}"},
+            {"art", orders.Sum(o => o.Cart.Items.Sum(i => i.Quantity)).ToString("N0", CultureInfo.CreateSpecificCulture("fr-FR"))}
+            };
 
-        //    return Ok();
-        //}
+            return Ok(data);
+        }
 
 
 

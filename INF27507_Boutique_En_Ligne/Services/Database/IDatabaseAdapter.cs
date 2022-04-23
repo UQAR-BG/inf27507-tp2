@@ -50,5 +50,6 @@ namespace INF27507_Boutique_En_Ligne.Services
         List<Category> GetCategories();
         List<SubCategory> GetSubCategories();
         List<ProductType> GetProductTypes();
+        List<Product> GetProduct(string keyword);
     }
 }

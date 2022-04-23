@@ -11,4 +11,5 @@ public class UserInfo
     
     public string? Email { get; set; }
     public string? Phone { get; set; }
+    public double Balance { get; set; }
 }
