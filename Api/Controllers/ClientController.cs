@@ -133,12 +133,9 @@ namespace Api.Controllers
             {
                 return NotFound();
             }
-
             _database.DeleteProduct(product_id, true);
-
             return Ok(product);
         }
-
 
         //faire le paiement
         [HttpGet]
