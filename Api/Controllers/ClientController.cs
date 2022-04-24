@@ -69,7 +69,7 @@ namespace Api.Controllers
         public async Task<IActionResult> GetProduct([FromRoute] string keyword)
         {
             //Product product = _database.GetProduct(keyword);
-            List<Product> products = _database.GetProduct(keyword);
+            List<Product> products = _database.GetProducts(keyword);
             if (!string.IsNullOrEmpty(keyword))
             {
                 return NotFound();
