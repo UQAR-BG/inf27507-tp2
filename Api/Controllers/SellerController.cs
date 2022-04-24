@@ -170,7 +170,7 @@ namespace Api.Controllers
         }
 
         [HttpGet]
-        [Route("/api/stats")]
+        [Route("/api/v/stats")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetStats()
         {
