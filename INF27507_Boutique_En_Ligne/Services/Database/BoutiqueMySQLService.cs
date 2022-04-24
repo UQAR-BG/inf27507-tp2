@@ -384,5 +384,10 @@ namespace INF27507_Boutique_En_Ligne.Services
         {
             return _dbContext.Products.Where(p => p.SellerId == id).ToList();
         }
+        
+        public List<Product> GetProducts(string keyword)
+        {
+            return _dbContext.Products.Where(p => p.Title.Contains(keyword)).ToList();
+        }
     }
 }

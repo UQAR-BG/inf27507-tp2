@@ -236,5 +236,10 @@ namespace INF27507_Boutique_En_Ligne.Services
         {
             return service.GetProductTypes();
         }
+
+        public List<Product> GetProducts(string keyword)
+        {
+            return service.GetProducts(keyword);
+        }
     }
 }
