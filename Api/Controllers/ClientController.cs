@@ -34,7 +34,10 @@ namespace Api.Controllers
                 UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
                 Client client = _database.GetClientWithUserName(userContext.UserName);
 
-                return Ok(UserInfo.CreateFrom(client));
+                UserInfo infos = UserInfo.CreateFrom(client);
+                infos.Balance = client.Balance;
+
+                return Ok(infos);
             }
             catch (Exception)
             {
@@ -62,7 +65,10 @@ namespace Api.Controllers
 
                 _database.UpdateClientInfo(client);
 
-                return Ok(UserInfo.CreateFrom(client));
+                UserInfo infos = UserInfo.CreateFrom(client);
+                infos.Balance = client.Balance;
+
+                return Ok(infos);
             }
             catch (Exception)
             {

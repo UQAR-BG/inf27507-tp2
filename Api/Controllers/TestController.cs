@@ -32,7 +32,7 @@ namespace Api.Controllers
 
             if (_userManager.IsInRoleAsync(user, "Client").Result)
             {
-                List<Colour> colours = _database.GetColours();
+                List<INF27507_Boutique_En_Ligne.Models.Colour> colours = _database.GetColours();
 
                 return Ok(colours.Select(c => c.Name).ToArray());
             }

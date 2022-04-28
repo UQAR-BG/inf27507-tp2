@@ -236,7 +236,7 @@ namespace INF27507_Boutique_En_Ligne.Services
             _dbContext.Products.Add(product);
             _dbContext.SaveChanges();
 
-            return product;
+            return GetProduct(product.Id);
         }
 
         public Product UpdateProduct(ProductUpdate update)
@@ -397,12 +397,31 @@ namespace INF27507_Boutique_En_Ligne.Services
 
         public List<Product> GetProductsOwnedBySeller(int id)
         {
-            return _dbContext.Products.Where(p => p.SellerId == id).ToList();
+            return _dbContext.Products
+                .Include(p => p.Colour)
+                .Include(p => p.Seller)
+                .Include(p => p.Category)
+                .Include(p => p.SubCategory)
+                .Include(p => p.ProductType)
+                .Include(p => p.Usage)
+                .Include(p => p.Gender)
+                .Where(p => p.SellerId == id)
+                .ToList();
         }
         
         public List<Product> GetProducts(string keyword)
         {
-            return _dbContext.Products.Where(p => p.Title.Contains(keyword)).ToList();
+            return _dbContext.Products
+                .Include(p => p.Colour)
+                .Include(p => p.Seller)
+                .Include(p => p.Category)
+                .Include(p => p.SubCategory)
+                .Include(p => p.ProductType)
+                .Include(p => p.Usage)
+                .Include(p => p.Gender)
+                .Where(p => p.Title
+                .Contains(keyword))
+                .ToList();
         }
     }
 }

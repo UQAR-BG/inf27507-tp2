@@ -13,15 +13,14 @@ public class UserInfo
     public string? Phone { get; set; }
     public double Balance { get; set; }
 
-    public static UserInfo CreateFrom(Client client)
+    public static UserInfo CreateFrom(User user)
     {
         return new UserInfo()
         {
-            Email = client.Email,
-            Balance = client.Balance,
-            Firstname = client.Firstname,
-            LastName = client.Lastname,
-            Phone = client.PhoneNumber
+            Email = user.Email,
+            Firstname = user.Firstname,
+            LastName = user.Lastname,
+            Phone = user.PhoneNumber
         };
     }
 }
