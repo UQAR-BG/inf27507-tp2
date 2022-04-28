@@ -27,6 +27,11 @@ namespace INF27507_Boutique_En_Ligne.Services
             return service.GetClient(email);
         }
 
+        public Client GetClientWithUserName(string userName)
+        {
+            return service.GetClientWithUserName(userName);
+        }
+
         public void UpdateClientInfo(Client client)
         {
             service.UpdateClientInfo(client);
@@ -50,6 +55,11 @@ namespace INF27507_Boutique_En_Ligne.Services
         public Seller GetSeller(string email)
         {
             return service.GetSeller(email);
+        }
+
+        public Seller GetSellerWithUserName(string userName)
+        {
+            return service.GetSellerWithUserName(userName);
         }
 
         public List<Seller> GetSellers()

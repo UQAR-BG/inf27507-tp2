@@ -3,7 +3,6 @@ using INF27507_Boutique_En_Ligne.Models.FormData;
 using INF27507_Boutique_En_Ligne.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 
@@ -27,206 +26,298 @@ namespace Api.Controllers
         [HttpGet]
         [Route("/api/infos")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetInfo()
         {
-            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
-            Client client = _database.GetClient(userContext.Email);
-
-            return Ok(new UserInfo()
+            try
             {
-                Email = client.Email,
-                Balance = client.Balance,
-                Firstname = client.Firstname,
-                LastName = client.Lastname,
-                Phone = client.PhoneNumber
-            });
-            return Ok(client);
+                UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
+                Client client = _database.GetClientWithUserName(userContext.UserName);
+
+                return Ok(UserInfo.CreateFrom(client));
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         //mettre a jour les informations du client
         [HttpPatch]
         [Route("/api/infos")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateInfo([FromForm] UserInfo userInfo)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateInfo([FromForm] UpdateUserInfo userInfo)
         {
-            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
-            Client client = _database.GetClient(userContext.Email);
-            client.Email = userInfo.Email;
-            client.PhoneNumber = userInfo.Phone;
-            client.Lastname = userInfo.LastName;
-            client.Firstname = userInfo.Firstname;
-            client.Balance = userInfo.Balance;
-            _database.UpdateClientInfo(client);
-            //_database.UpdateClientBalance(client);
-            return Ok(client);
+            try
+            {
+                UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
+
+                Client client = _database.GetClientWithUserName(userContext.UserName);
+                client.Email = userInfo.Email ?? client.Email;
+                client.PhoneNumber = userInfo.Phone ?? client.PhoneNumber;
+                client.Lastname = userInfo.LastName ?? client.Lastname;
+                client.Firstname = userInfo.Firstname ?? client.Firstname;
+                client.Balance = userInfo.Balance ?? client.Balance;
+
+                _database.UpdateClientInfo(client);
+
+                return Ok(UserInfo.CreateFrom(client));
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         //recupérer une liste de produits par mots clés
         [HttpGet]
         [Route("/api/product/{keyword}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProduct([FromRoute] string keyword)
         {
-            List<Product> products = _database.GetProducts(keyword);
-            if (string.IsNullOrEmpty(keyword))
+            try
             {
-                return NotFound();
+                if (string.IsNullOrEmpty(keyword))
+                    return NotFound();
+
+                List<Product> products = _database.GetProducts(keyword);
+                return Ok(products);
             }
-           // _database.GetProduct(keyword);
-            return Ok(products);
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         //recuperer une liste de produits avec un identifiant
         [HttpGet]
         [Route("/api/products/{product_id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetProduct([FromRoute] int product_id)
         {
-            //List<Product> products = _database.GetProduct(Product_id) ;
-            Product product = _database.GetProduct(product_id);
-            if (product_id == null)
+            try
             {
-                return NotFound(string.Empty);
+                Product product = _database.GetProduct(product_id);
+                if (product == null)
+                    return NotFound(string.Empty);
+
+                return Ok(product);
             }
-            
-            _database.GetProduct(product_id);
-            return Ok(product);
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
         
         [HttpGet]
-        [Route("/api/cart/")]
+        [Route("/api/cart")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetCart()
         {
-            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
-            Client client = _database.GetClient(userContext.Email);
-            Cart cart = _database.CreateActiveCartIfNotExist(client.Id);
-            return Ok(cart);
+            try
+            {
+                UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
+
+                Client client = _database.GetClientWithUserName(userContext.UserName);
+                Cart cart = _database.CreateActiveCartIfNotExist(client.Id);
+                return Ok(cart);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
         
         //ajouter un nouvaeu produit
         [HttpPost]
-        [Route("/api/cart/")]
+        [Route("/api/cart")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> AddToCart([FromForm] int product, [FromForm] int itemQuantity)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AddToCart([FromForm] int productId, [FromForm] int itemQuantity)
         {
-            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
-            Client client = _database.GetClient(userContext.Email);
-            Product product1 = _database.GetProduct(product);
-            if (product1 == null || product1.Id == 0)
+            try
             {
-                return NotFound(string.Empty);
+                UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
+
+                Client client = _database.GetClientWithUserName(userContext.UserName);
+                Product product = _database.GetProduct(productId);
+                if (product == null)
+                    return NotFound(string.Empty);
+
+                Cart cart = _database.CreateActiveCartIfNotExist(client.Id);
+                _database.AddItem(client.Id, productId, itemQuantity);
+                return Ok(cart);
             }
-            Cart cart = _database.CreateActiveCartIfNotExist(client.Id);
-            _database.AddItem(client.Id, product, itemQuantity);
-            return Ok(cart);
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         //changer la quantité
         [HttpPatch]
         [Route("/api/cart/{product_id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPoduct([FromRoute] int product_id, [FromForm] int newQuantity)
         {
-            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
-            Client client = _database.GetClient(userContext.Email);
-            List<CartItem> cartItems = _database.CreateActiveCartIfNotExist(client.Id).Items.ToList();
-            if (cartItems.All(o => o.ProductId != product_id))
+            try
             {
-                return NotFound($"Aucun produit avec l'identifiant {product_id}");
+                UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
+
+                Client client = _database.GetClientWithUserName(userContext.UserName);
+                List<CartItem> cartItems = _database.CreateActiveCartIfNotExist(client.Id).Items.ToList();
+                if (cartItems.All(o => o.ProductId != product_id))
+                    return NotFound($"Aucun produit avec l'identifiant {product_id}");
+
+                CartItem cartItem = cartItems.First(o => o.ProductId == product_id);
+                _database.UpdateItem(client.Id, product_id, newQuantity);
+                return Ok(cartItems);
             }
-            CartItem cartItem = cartItems.First(o => o.ProductId == product_id);
-            _database.UpdateItem(client.Id, product_id, newQuantity);
-            return Ok(cartItems);
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         //enlever le produit du panier
         [HttpDelete]
         [Route("/api/cart/{product_id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> RemoveFromCart([FromRoute] int product_id)
         {
-
-            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
-            Client client = _database.GetClient(userContext.Email);
-            List<CartItem> cartItems = _database.CreateActiveCartIfNotExist(client.Id).Items.ToList();
-            if (cartItems.All(o => o.ProductId != product_id))
+            try
             {
-                return NotFound($"Aucun produit avec l'identifiant {product_id}");
+                UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
+
+                Client client = _database.GetClientWithUserName(userContext.UserName);
+                List<CartItem> cartItems = _database.CreateActiveCartIfNotExist(client.Id).Items.ToList();
+                if (cartItems.All(o => o.ProductId != product_id))
+                    return NotFound($"Aucun produit avec l'identifiant {product_id}");
+
+                _database.RemoveItem(client.Id, product_id);
+
+                return Ok(_database.GetActiveCart(client.Id));
             }
-
-            _database.RemoveItem(client.Id, product_id);
-
-            return Ok(_database.GetActiveCart(client.Id));
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         //faire le paiement
         [HttpGet]
-        [Route("/api/pay/")]
+        [Route("/api/pay")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetPay()
         {
-            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
-            Client client = _database.GetClient(userContext.Email);
-            Cart cart = _database.GetActiveCart(client.Id);
-            if (cart == null || cart.Items.Count == 0)
-                return BadRequest("Aucun produit dans le panier");
-            double cartTotal = _database.GetCartTotal(cart.Id);
+            try
+            {
+                UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
 
-            if (client.Balance < cartTotal)
-                return BadRequest("Votre solde est insuffisant");
+                Client client = _database.GetClientWithUserName(userContext.UserName);
+                Cart cart = _database.GetActiveCart(client.Id);
+                if (cart == null || cart.Items.Count == 0)
+                    return BadRequest("Aucun produit dans le panier");
 
-            _database.UpdateClientBalance(client, cartTotal);
-            int orderId = _database.CreateOrder(client.Id, new PaymentMethod() { Id = 1 });
-            Order order = _database.GetOrder(orderId);
-            return Ok(order);
+                double cartTotal = _database.GetCartTotal(cart.Id);
+
+                if (client.Balance < cartTotal)
+                    return BadRequest("Votre solde est insuffisant");
+
+                _database.UpdateClientBalance(client, cartTotal);
+                int orderId = _database.CreateOrder(client.Id, new PaymentMethod() { Id = 1 });
+                Order order = _database.GetOrder(orderId);
+                return Ok(order);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         //recuperer la liste des factures
         [HttpGet]
-        [Route("/api/invoices/")]
+        [Route("/api/invoices")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetFacture()
         {
-            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
-            Client client = _database.GetClient(userContext.Email);
-            List<Order> orders = _database.GetOrders(client);
-            return Ok(orders);
+            try
+            {
+                UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
+
+                Client client = _database.GetClientWithUserName(userContext.UserName);
+                List<Order> orders = _database.GetOrders(client);
+                return Ok(orders);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         //recuperer une facture en particulier
         [HttpGet]
         [Route("/api/invoices/{invoice_id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetFacture([FromRoute] int invoice_id) 
         {
-            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
-            Client client = _database.GetClient(userContext.Email);
-            Order order = _database.GetOrder(invoice_id);
-            if (order == null || order.Id != invoice_id || order.Cart.ClientId != client.Id)
-                return NotFound($"Aucune facture avec l'identifiant {invoice_id} pour ce client");
-            return Ok(order);
+            try
+            {
+                UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
+
+                Client client = _database.GetClientWithUserName(userContext.UserName);
+                Order order = _database.GetOrder(invoice_id);
+                if (order == null || order.Id != invoice_id || order.Cart.ClientId != client.Id)
+                    return NotFound($"Aucune facture avec l'identifiant {invoice_id} pour ce client");
+
+                return Ok(order);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
 
         //recuperer les stats
         [HttpGet]
-        [Route("/api/stats/")]
+        [Route("/api/stats")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetStats()
         {
-            UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
-            Client client = _database.GetClient(userContext.Email);
-            //List<CartItem> items = _database.GetCartItems(client);
-            List<Order> orders = _database.GetOrders(client);
-
-            Dictionary<string, string> data = new Dictionary<string, string>
+            try
             {
-            {"total", $"{orders.Sum(o => o.Cart.Items.Sum(i => i.Quantity * i.SalePrice)):C}"},
-            {"art", orders.Sum(o => o.Cart.Items.Sum(i => i.Quantity)).ToString("N0", CultureInfo.CreateSpecificCulture("fr-FR"))}
-            };
+                UserContext userContext = _jwtHandler.GetUserContext(HttpContext.Request);
 
-            return Ok(data);
+                Client client = _database.GetClientWithUserName(userContext.UserName);
+                List<Order> orders = _database.GetOrders(client);
+
+                Dictionary<string, string> data = new Dictionary<string, string>
+                {
+                    {"total", $"{orders.Sum(o => o.Cart.Items.Sum(i => i.Quantity * i.SalePrice)):C}"},
+                    {"art", orders.Sum(o => o.Cart.Items.Sum(i => i.Quantity)).ToString("N0", CultureInfo.CreateSpecificCulture("fr-FR"))}
+                };
+
+                return Ok(data);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
         }
-
     }
 }

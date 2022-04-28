@@ -30,7 +30,13 @@ namespace INF27507_Boutique_En_Ligne.Services
             return _dbContext.Clients
                 .FirstOrDefault(c => c.Email.Equals(email));
         }
-        
+
+        public Client GetClientWithUserName(string userName)
+        {
+            return _dbContext.Clients
+                .FirstOrDefault(c => c.UserName.Equals(userName));
+        }
+
         public List<Client> GetClients()
         {
             return _dbContext.Clients
@@ -56,6 +62,12 @@ namespace INF27507_Boutique_En_Ligne.Services
                 .FirstOrDefault(c => c.Email.Equals(email));
         }
 
+        public Seller GetSellerWithUserName(string userName)
+        {
+            return _dbContext.Sellers
+                .FirstOrDefault(c => c.UserName.Equals(userName));
+        }
+
         public List<Seller> GetSellers()
         {
             return _dbContext.Sellers.ToList();
@@ -76,8 +88,11 @@ namespace INF27507_Boutique_En_Ligne.Services
         public Cart GetActiveCart(int clientId)
         {
             return (from carts in _dbContext.Cart
-                   where carts.ClientId == clientId && carts.Active
-                   select carts).SingleOrDefault();
+                    where carts.ClientId == clientId && carts.Active
+                    select carts)
+                        .Include(c => c.Items)
+                            .ThenInclude(i => i.Product)
+                        .SingleOrDefault();
         }
 
         public double GetCartTotal(int cartId)

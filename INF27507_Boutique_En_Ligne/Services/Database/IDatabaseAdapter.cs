@@ -8,11 +8,13 @@ namespace INF27507_Boutique_En_Ligne.Services
         DbContext GetContext();
         Client GetClient(int Id);
         Client GetClient(string email);
+        Client GetClientWithUserName(string userName);
         void AddClient(Client client);
         void UpdateClientInfo(Client client);
         List<Client> GetClients();
         Seller GetSeller(int id);
         Seller GetSeller(string email);
+        Seller GetSellerWithUserName(string userName);
         List<Seller> GetSellers();
         void AddSeller(Seller seller);
         void UpdateSellerInfo(Seller seller);

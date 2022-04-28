@@ -28,7 +28,7 @@ builder.Services.AddSingleton<IJwtHandler>(new JwtHandler(builder.Configuration)
 
 builder.Services.AddDbContext<AuthDbContext>(options => {
     options.UseMySql(
-        builder.Configuration.GetConnectionString("MySQL"),
+        builder.Configuration.GetConnectionString("MySQL"), 
         new MySqlServerVersion(new Version(8, 0, 28))
     ); 
 });

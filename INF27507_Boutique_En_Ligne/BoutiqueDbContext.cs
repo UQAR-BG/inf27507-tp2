@@ -27,7 +27,7 @@ namespace INF27507_Boutique_En_Ligne
                 .Build();
 
             dbContextOptionsBuilder.UseMySql(
-                configuration.GetConnectionString("MySQL"),
+                configuration.GetConnectionString("MySQL"), 
                 new MySqlServerVersion(new Version(8, 0, 28))
             );
         }
@@ -122,12 +122,12 @@ namespace INF27507_Boutique_En_Ligne
             );
 
             modelBuilder.Entity<Product>().HasKey(product => product.Id).HasName("pk_products_id");
-            modelBuilder.Entity<Product>().HasOne(product => product.Gender);
-            modelBuilder.Entity<Product>().HasOne(product => product.Usage);
-            modelBuilder.Entity<Product>().HasOne(product => product.Colour);
-            modelBuilder.Entity<Product>().HasOne(product => product.Category);
-            modelBuilder.Entity<Product>().HasOne(product => product.SubCategory);
-            modelBuilder.Entity<Product>().HasOne(product => product.ProductType);
+            modelBuilder.Entity<Product>().HasOne(product => product.Gender).WithMany().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Product>().HasOne(product => product.Usage).WithMany().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Product>().HasOne(product => product.Colour).WithMany().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Product>().HasOne(product => product.Category).WithMany().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Product>().HasOne(product => product.SubCategory).WithMany().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Product>().HasOne(product => product.ProductType).WithMany().OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Product>().HasOne(product => product.Seller).WithMany(seller => seller.Products);
             modelBuilder.Entity<Product>().HasData(
                 new Product() { Id = 1, SellerId = 1, GenderId = 1, CategoryId = 1, SubCategoryId = 1, ProductTypeId = 1, ColourId = 1, UsageId = 1, Title = "Gini and Jony Boys Printed Black T-Shirt", Image = "39855.jpg", ImageURL = "http://assets.myntassets.com/v1/images/style/properties/6fa45d21a0d6194932652bfcaf4c0e2b_images.jpg", Price = 20.00, Active = true },
