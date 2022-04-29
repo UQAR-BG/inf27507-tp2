@@ -56,11 +56,17 @@ namespace INF27507_Boutique_En_Ligne.Controllers
                 return RedirectToAction("Index", "Home");
 
             Client client = _database.GetClient((int)_clientId);
-            Client stripeClient = _database.GetClient(stripeEmail);
             double totalAmount = _database.GetCartTotal(_activeCart.Id);
 
             CustomerCreateOptions optionsClient;
-            if (stripeClient == null)
+            CustomerSearchOptions searchOptions = new CustomerSearchOptions
+            {
+                Query = $"email:'{stripeEmail}'"
+            };
+            CustomerService customerService = new CustomerService();
+            Customer customer = customerService.Search(searchOptions).FirstOrDefault();
+
+            if (customer == null)
             {
                 optionsClient = new CustomerCreateOptions
                 {
@@ -68,19 +74,10 @@ namespace INF27507_Boutique_En_Ligne.Controllers
                     Name = client.Firstname + " " + client.Lastname,
                     Phone = client.PhoneNumber
                 };
-            }
-            else
-            {
-                optionsClient = new CustomerCreateOptions
-                {
-                    Email = stripeClient.Email,
-                    Name = stripeClient.Firstname + " " + stripeClient.Lastname,
-                    Phone = stripeClient.PhoneNumber
-                };
+
+                customerService.Create(optionsClient);
             }
 
-            CustomerService customerService = new CustomerService();
-            Customer customer = customerService.Create(optionsClient);
             ChargeCreateOptions chargeCreateOptions = new ChargeCreateOptions
             {
                 Amount = (long)(totalAmount * 100),
