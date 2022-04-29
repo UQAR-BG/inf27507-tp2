@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 /*
  * Tout le crédit des idées utilisées dans cette classe doit être
@@ -54,7 +55,13 @@ namespace Api.Controllers
 
                     IdentityResult result = await _userManager.CreateAsync(user, register.Password);
                     if (!result.Succeeded)
-                        return StatusCode(StatusCodes.Status500InternalServerError, "User creation failed! Please check user details and try again.");
+                    {
+                        StringBuilder errors = new StringBuilder();
+                        foreach (IdentityError error in result.Errors)
+                            errors.AppendLine(error.Description);
+
+                        return BadRequest($"An error has occured: {errors}");
+                    }
 
                     _userManager.AddToRoleAsync(user, register.Role.ToString()).Wait();
                     AddUserToSpecificTable(register);
@@ -108,6 +115,7 @@ namespace Api.Controllers
                 Email = register.Email,
                 UserName = register.Username,
                 Firstname = register.FullName,
+                Lastname = register.FullName,
                 Balance = 200
             };
 
@@ -120,7 +128,8 @@ namespace Api.Controllers
             {
                 Email = register.Email,
                 UserName = register.Username,
-                Firstname = register.FullName
+                Firstname = register.FullName,
+                Lastname = register.FullName
             };
 
             _database.AddSeller(seller);
